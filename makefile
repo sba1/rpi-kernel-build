@@ -4,6 +4,8 @@
 
 IMAGE_NAME := rpi
 
+KERNEL_CONTAINER := rpi-kernel
+
 all: image
 
 .PHONY: image
@@ -36,6 +38,10 @@ linux-menuconfig: image
 # Use this target to compile the linux kernel
 .PHONY: kernel
 kernel: image
-	-docker rm $@
-	docker run -ti --name $@ $(IMAGE_NAME) sh -x -c "cd /build/linux-rpi && make ARCH=arm -j\$$(nproc) CROSS_COMPILE=\$${CCPREFIX}"
-	docker cp $@:/build/linux-rpi/arch/arm/boot/zImage .
+	-docker rm $(KERNEL_CONTAINER)
+	docker run -ti --name $(KERNEL_CONTAINER) $(IMAGE_NAME) sh -x -c "cd /build/linux-rpi && make ARCH=arm -j\$$(nproc) CROSS_COMPILE=\$${CCPREFIX}"
+	docker cp $(KERNEL_CONTAINER):/build/linux-rpi/arch/arm/boot/zImage .
+
+.PHONY: kernel-clean
+kernel-clean:
+	-docker rm $(KERNEL_CONTAINER)
