@@ -38,3 +38,4 @@ linux-menuconfig: image
 kernel: image
 	-docker rm $@
 	docker run -ti --name $@ $(IMAGE_NAME) sh -x -c "cd /build/linux-rpi && make ARCH=arm -j\$$(nproc) CROSS_COMPILE=\$${CCPREFIX}"
+	docker cp $@:/build/linux-rpi/arch/arm/boot/zImage .
