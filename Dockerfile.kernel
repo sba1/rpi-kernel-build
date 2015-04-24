@@ -1,0 +1,4 @@
+FROM rpi
+WORKDIR /build/linux-rpi
+RUN make ARCH=arm -j$(nproc) CROSS_COMPILE=${CCPREFIX}
+RUN make ARCH=arm -j$(nproc) CROSS_COMPILE=${CCPREFIX} modules

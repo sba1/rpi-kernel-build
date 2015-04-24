@@ -1,8 +1,10 @@
 #
 # The makefile for driving the build process via Docker
+# At least Docker 1.5 is required.
 #
 
 IMAGE_NAME := rpi
+IMAGE_WITH_KERNAL_NAME := rpi-kernel
 
 KERNEL_CONTAINER := rpi-kernel
 
@@ -12,10 +14,19 @@ all: image
 image:
 	docker build -t $(IMAGE_NAME) .
 
+.PHONY: kernel-image
+kernel-image: image
+	docker build -t $(IMAGE_WITH_KERNAL_NAME) -f Dockerfile.kernel .
+
 # Use this target to login into the "vanilla" image
 .PHONY: login
 login: image
 	docker run -ti $(IMAGE_NAME) bash
+
+# Use this target to login into the image that also contains the kernel artifact
+.PHONY: login-kernel
+login-kernel: kernel-image
+	docker run -ti $(IMAGE_WITH_KERNAL_NAME) bash
 
 # Use this target for altering the cross compiler configuration.
 # The local crosstool.config will be updated when this target is
@@ -35,11 +46,11 @@ linux-menuconfig: image
 	docker run -ti --name $@ $(IMAGE_NAME) sh -c "cd /build/linux-rpi/ && make ARCH=arm menuconfig && cp .config linux.config"
 	docker cp $@:/build/linux-rpi/linux.config .
 
-# Use this target to compile the linux kernel
+# Use this target to extract the linux kernel
 .PHONY: kernel
-kernel: image
+kernel: kernel-image
 	-docker rm $(KERNEL_CONTAINER)
-	docker run -ti --name $(KERNEL_CONTAINER) $(IMAGE_NAME) sh -x -c "cd /build/linux-rpi && make ARCH=arm -j\$$(nproc) CROSS_COMPILE=\$${CCPREFIX}"
+	docker run -ti --name $(KERNEL_CONTAINER) $(IMAGE_WITH_KERNAL_NAME) sh -x -c "echo test"
 	docker cp $(KERNEL_CONTAINER):/build/linux-rpi/arch/arm/boot/zImage .
 
 .PHONY: kernel-clean
