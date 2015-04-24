@@ -58,6 +58,7 @@ kernel: kernel-image
 	-docker rm $(KERNEL_CONTAINER)
 	docker run -ti --name $(KERNEL_CONTAINER) $(IMAGE_WITH_KERNAL_NAME) sh -x -c "echo test"
 	docker cp $(KERNEL_CONTAINER):/build/linux-rpi/arch/arm/boot/zImage .
+	docker cp $(KERNEL_CONTAINER):/build/modules/modules.tar.gz .
 
 .PHONY: kernel-clean
 kernel-clean:
