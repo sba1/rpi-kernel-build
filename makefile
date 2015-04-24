@@ -46,6 +46,12 @@ linux-menuconfig: image
 	docker run -ti --name $@ $(IMAGE_NAME) sh -c "cd /build/linux-rpi/ && make ARCH=arm menuconfig && cp .config linux.config"
 	docker cp $@:/build/linux-rpi/linux.config .
 
+.PHONY: linux-oldconfig
+linux-oldconfig: image
+	-docker rm $@
+	docker run -ti --name $@ $(IMAGE_NAME) sh -c "cd /build/linux-rpi/ && make ARCH=arm oldconfig && cp .config linux.config"
+	docker cp $@:/build/linux-rpi/linux.config .
+
 # Use this target to extract the linux kernel
 .PHONY: kernel
 kernel: kernel-image
