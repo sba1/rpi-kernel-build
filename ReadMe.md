@@ -5,8 +5,8 @@ may also work for Raspberry Pi.
 Requirements
 ============
 
-You need a Docker installation to build the Raspberry Pi
-Linux kernel with this project.
+You need a Docker installation of at least version 1.5 to
+build the Raspberry Pi Linux kernel with this project.
 
 Usage
 =====
@@ -23,4 +23,14 @@ image that consists of a cross compiler environment
 the special Linux kernel for the Raspberry Pi 2. The
 image also contains the source code of the Linux kernel
 to take advantage of Docker's cache. The actual kernel,
-however, is built in a container.
+however, is built as part of another image on top of the
+first one. The ```zImage``` and ```modules.tar.gz``` are
+extracted from that image.
+
+To adjust the kernel configuration use
+
+```
+ $ make linux-menuconfig
+```
+
+in the command prompt.
