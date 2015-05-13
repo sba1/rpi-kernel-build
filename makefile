@@ -63,3 +63,8 @@ kernel: kernel-image
 .PHONY: kernel-clean
 kernel-clean:
 	-docker rm $(KERNEL_CONTAINER)
+
+.PHONY: cache-clean
+cache-clean: kernel-clean
+	-docker rmi $(shell docker history -q $(IMAGE_WITH_KERNAL_NAME))
+	-docker rmi $(shell docker history -q $(IMAGE_NAME))
